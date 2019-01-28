@@ -111,6 +111,11 @@ public class AddressBook {
     private static final String COMMAND_FIND_PARAMETERS = "KEYWORD [MORE_KEYWORDS]";
     private static final String COMMAND_FIND_EXAMPLE = COMMAND_FIND_WORD + " alice bob charlie";
 
+    private static final String COMMAND_SEARCH_NUMBER = "search";
+    private static final String COMMAND_SEARCH_DESC = "Search for a person by their number";
+    private static final String COMMAND_SEARCH_PARAMETERS = "KEYWORD [NUMBER]";
+    private static final String COMMAND_SEARCH_EXAMPLE = COMMAND_SEARCH_NUMBER + " 98765432";
+
     private static final String COMMAND_LIST_WORD = "list";
     private static final String COMMAND_LIST_DESC = "Displays all persons as a list with index numbers.";
     private static final String COMMAND_LIST_EXAMPLE = COMMAND_LIST_WORD;
@@ -378,6 +383,8 @@ public class AddressBook {
             return executeAddPerson(commandArgs);
         case COMMAND_FIND_WORD:
             return executeFindPersons(commandArgs);
+        case COMMAND_SEARCH_NUMBER:
+            return executeSearchNumber(commandArgs);
         case COMMAND_LIST_WORD:
             return executeListAllPersonsInAddressBook();
         case COMMAND_DELETE_WORD:
@@ -459,6 +466,23 @@ public class AddressBook {
         final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
         showToUser(personsFound);
         return getMessageForPersonsDisplayedSummary(personsFound);
+    }
+
+    /**
+     * Finds and lists all persons in the address book whose number contains the argument keyword.
+     * Keyword matching is case sensitive.
+     *
+     * @param commandArgs full command args string from the user
+     * @return feedback display message for the operation result
+     */
+    private static String executeSearchNumber(String commandArgs) {
+        final String keyword = commandArgs;
+        for (String[] person : getAllPersonsInAddressBook()) {
+            if (getPhoneFromPerson(person).equals(keyword)) {
+                return getNameFromPerson(person);
+            }
+        }
+        return getMessageForInvalidCommandInput(COMMAND_SEARCH_NUMBER, getUsageInfoForSearchCommand());
     }
 
     /**
@@ -1090,6 +1114,7 @@ public class AddressBook {
     private static String getUsageInfoForAllCommands() {
         return getUsageInfoForAddCommand() + LS
                 + getUsageInfoForFindCommand() + LS
+                + getUsageInfoForSearchCommand() + LS
                 + getUsageInfoForViewCommand() + LS
                 + getUsageInfoForDeleteCommand() + LS
                 + getUsageInfoForClearCommand() + LS
@@ -1109,6 +1134,13 @@ public class AddressBook {
         return String.format(MESSAGE_COMMAND_HELP, COMMAND_FIND_WORD, COMMAND_FIND_DESC) + LS
                 + String.format(MESSAGE_COMMAND_HELP_PARAMETERS, COMMAND_FIND_PARAMETERS) + LS
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_FIND_EXAMPLE) + LS;
+    }
+
+    /** Returns the string for showing 'search' command usage instruction */
+    private static String getUsageInfoForSearchCommand() {
+        return String.format(MESSAGE_COMMAND_HELP, COMMAND_SEARCH_NUMBER, COMMAND_SEARCH_DESC) + LS
+                + String.format(MESSAGE_COMMAND_HELP_PARAMETERS, COMMAND_SEARCH_PARAMETERS) + LS
+                + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_SEARCH_EXAMPLE) + LS;
     }
 
     /** Returns the string for showing 'delete' command usage instruction */
